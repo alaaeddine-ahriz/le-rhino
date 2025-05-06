@@ -1,0 +1,154 @@
+"use client";
+
+import { useState, useRef, useEffect } from 'react';
+import { useAuth } from '@/context/AuthContext';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+
+// Message type
+interface Message {
+  id: string;
+  content: string;
+  sender: 'user' | 'ai';
+  timestamp: Date;
+}
+
+export default function Chat() {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      content: 'Hello! How can I help you today?',
+      sender: 'ai',
+      timestamp: new Date(),
+    },
+  ]);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    // If user is not authenticated, redirect to sign in
+    if (!user) {
+      router.push('/auth/signin');
+      return;
+    }
+  }, [user, router]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!input.trim()) return;
+    
+    // Create user message
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      content: input,
+      sender: 'user',
+      timestamp: new Date(),
+    };
+    
+    setMessages((prev) => [...prev, userMessage]);
+    setInput('');
+    setIsLoading(true);
+    
+    // Simulate AI response (this will be replaced with actual API call later)
+    setTimeout(() => {
+      const aiMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: `I received your message: "${input}". This is a placeholder response. The actual AI integration will be implemented later.`,
+        sender: 'ai',
+        timestamp: new Date(),
+      };
+      
+      setMessages((prev) => [...prev, aiMessage]);
+      setIsLoading(false);
+    }, 1000);
+  };
+
+  if (!user) {
+    return null; // Will redirect in useEffect
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-6 flex flex-col h-[calc(100vh-64px)]">
+      <div className="flex-1 overflow-y-auto mb-4 space-y-4">
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={`flex ${
+              message.sender === 'user' ? 'justify-end' : 'justify-start'
+            }`}
+          >
+            <div className="flex items-start max-w-3/4">
+              {message.sender === 'ai' && (
+                <Avatar className="mr-2 mt-0.5">
+                  <AvatarFallback>AI</AvatarFallback>
+                  <AvatarImage src="/icons/ai-avatar.png" alt="AI" />
+                </Avatar>
+              )}
+              <div
+                className={`px-4 py-2 rounded-lg ${
+                  message.sender === 'user'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted'
+                }`}
+              >
+                <p>{message.content}</p>
+                <p className="text-xs mt-1 opacity-70">
+                  {message.timestamp.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </p>
+              </div>
+              {message.sender === 'user' && (
+                <Avatar className="ml-2 mt-0.5">
+                  <AvatarFallback>
+                    {user?.displayName?.[0] || user?.email?.[0] || 'U'}
+                  </AvatarFallback>
+                  <AvatarImage src={user?.photoURL || undefined} alt={user?.displayName || 'User'} />
+                </Avatar>
+              )}
+            </div>
+          </div>
+        ))}
+        {isLoading && (
+          <div className="flex justify-start">
+            <div className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-muted">
+              <div className="w-2 h-2 rounded-full bg-gray-400 animate-pulse"></div>
+              <div className="w-2 h-2 rounded-full bg-gray-400 animate-pulse delay-150"></div>
+              <div className="w-2 h-2 rounded-full bg-gray-400 animate-pulse delay-300"></div>
+            </div>
+          </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+      
+      <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
+        <Input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Type your message..."
+          disabled={isLoading}
+          className="flex-1"
+        />
+        <Button type="submit" disabled={isLoading || !input.trim()}>
+          Send
+        </Button>
+      </form>
+    </div>
+  );
+} 
