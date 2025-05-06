@@ -18,22 +18,23 @@ export function Navigation() {
   ];
 
   return (
-    <header className="w-full border-b border-gray-200 bg-white">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <div className="flex items-center gap-6">
-          <Link href="/" className="text-xl font-bold">
-            Rhino IA
+    <header className="w-full bg-white shadow-md">
+      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+        <div className="flex items-center gap-8">
+          <Link href="/" className="flex items-center text-2xl font-extrabold text-gray-900">
+            <span className="mr-2 text-3xl">🦏</span>
+            Le Rhino
           </Link>
           
-          <nav className="hidden md:flex items-center space-x-4">
+          <nav className="hidden md:flex items-center space-x-6">
             {routes.map((route) => (
               <Link
                 key={route.path}
                 href={route.path}
-                className={`px-3 py-2 rounded-md text-sm font-medium ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   pathname === route.path
-                    ? 'bg-slate-100 text-slate-900'
-                    : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                    ? 'bg-gray-200 text-gray-900'
+                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                 }`}
               >
                 {route.name}
@@ -52,7 +53,7 @@ export function Navigation() {
               <Button variant="outline" onClick={logout}>Logout</Button>
             </div>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <Link href="/auth/signin">
                 <Button variant="outline">Sign In</Button>
               </Link>
