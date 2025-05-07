@@ -1,7 +1,7 @@
 {
-  "name": "Rhino IA",
-  "short_name": "Rhino IA",
-  "description": "Rhino IA PWA Application",
+  "name": "Le Rhino",
+  "short_name": "Le Rhino",
+  "description": "Le Rhino - PWA Application",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
