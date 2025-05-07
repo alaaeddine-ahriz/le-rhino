@@ -18,6 +18,41 @@ interface Message {
   timestamp: Date;
 }
 
+/**
+ * Extracts the actual text response from the n8n response data
+ */
+const extractResponseText = (data: any): string => {
+  try {
+    // If it's already a string, return it
+    if (typeof data === 'string') {
+      return data;
+    }
+    
+    // If it's an array with objects that have an 'output' field (like [{"output":"text"}])
+    if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'object' && data[0].output) {
+      return data[0].output;
+    }
+    
+    // If it's an object with an 'output' field
+    if (typeof data === 'object' && data && data.output) {
+      return data.output;
+    }
+    
+    // If it's an object with a 'text' or 'message' field
+    if (typeof data === 'object' && data) {
+      if (data.text) return data.text;
+      if (data.message) return data.message;
+      if (data.response) return data.response;
+    }
+    
+    // Fallback: stringify the entire object
+    return JSON.stringify(data);
+  } catch (error) {
+    console.error('Error extracting response text:', error);
+    return String(data);
+  }
+};
+
 export default function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -80,12 +115,13 @@ export default function Chat() {
         throw new Error(result.error || "Échec de l'envoi au webhook");
       }
       
-      // Create AI message from the direct response
+      // Extract the text from the response
+      const responseText = extractResponseText(result.data);
+      
+      // Create AI message with the extracted text
       const aiMessage: Message = {
         id: Date.now().toString(),
-        content: typeof result.data === 'string' 
-          ? result.data 
-          : JSON.stringify(result.data),
+        content: responseText,
         sender: 'ai',
         timestamp: new Date(),
       };

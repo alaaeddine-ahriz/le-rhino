@@ -11,6 +11,41 @@ import { useAuth } from '@/context/AuthContext';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useRouter } from 'next/navigation';
 
+/**
+ * Extracts the actual text response from the n8n response data
+ */
+const extractResponseText = (data: any): string => {
+  try {
+    // If it's already a string, return it
+    if (typeof data === 'string') {
+      return data;
+    }
+    
+    // If it's an array with objects that have an 'output' field (like [{"output":"text"}])
+    if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'object' && data[0].output) {
+      return data[0].output;
+    }
+    
+    // If it's an object with an 'output' field
+    if (typeof data === 'object' && data && data.output) {
+      return data.output;
+    }
+    
+    // If it's an object with a 'text' or 'message' field
+    if (typeof data === 'object' && data) {
+      if (data.text) return data.text;
+      if (data.message) return data.message;
+      if (data.response) return data.response;
+    }
+    
+    // Fallback: stringify the entire object
+    return JSON.stringify(data);
+  } catch (error) {
+    console.error('Error extracting response text:', error);
+    return String(data);
+  }
+};
+
 export default function N8nDebugPage() {
   const { user } = useAuth();
   const router = useRouter();
@@ -18,6 +53,7 @@ export default function N8nDebugPage() {
   const [sessionId, setSessionId] = useState('');
   const [sending, setSending] = useState(false);
   const [response, setResponse] = useState<any>(null);
+  const [extractedText, setExtractedText] = useState<string>('');
   const [rawResponse, setRawResponse] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [webhookUrl, setWebhookUrl] = useState<string>('');
@@ -43,6 +79,7 @@ export default function N8nDebugPage() {
     setSending(true);
     setResponse(null);
     setRawResponse('');
+    setExtractedText('');
     
     try {
       addLog(`Sending message to n8n: "${input}"`);
@@ -61,13 +98,16 @@ export default function N8nDebugPage() {
         throw new Error(result.error || "Failed to send to webhook");
       }
       
-      addLog('Message sent successfully, received direct response');
-      
       // Set the response directly
       setResponse(result.data);
       setRawResponse(JSON.stringify(result.data, null, 2));
       
+      // Extract the text content
+      const text = extractResponseText(result.data);
+      setExtractedText(text);
+      
       addLog(`Response received: ${JSON.stringify(result.data)}`);
+      addLog(`Extracted text: ${text}`);
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
       setErrorMessage(errorMsg);
@@ -82,6 +122,7 @@ export default function N8nDebugPage() {
     setInput('');
     setResponse(null);
     setRawResponse('');
+    setExtractedText('');
     setErrorMessage(null);
     setLogs([]);
     addLog('Session reset with new session ID');
@@ -157,17 +198,38 @@ export default function N8nDebugPage() {
                 </Alert>
               )}
               
-              <Tabs defaultValue="response" className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="response">Response</TabsTrigger>
+              <Tabs defaultValue="extracted" className="w-full">
+                <TabsList className="grid w-full grid-cols-4">
+                  <TabsTrigger value="extracted">Extracted Response</TabsTrigger>
+                  <TabsTrigger value="structured">Structured Response</TabsTrigger>
                   <TabsTrigger value="raw">Raw Data</TabsTrigger>
                   <TabsTrigger value="logs">Debug Logs</TabsTrigger>
                 </TabsList>
                 
-                <TabsContent value="response">
+                <TabsContent value="extracted">
                   <Card>
                     <CardHeader>
-                      <CardTitle>Response from n8n</CardTitle>
+                      <CardTitle>Extracted Response Text</CardTitle>
+                      <CardDescription>The text that will be displayed in the chat</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {extractedText ? (
+                        <div className="bg-gray-100 dark:bg-gray-900 p-4 rounded-md overflow-auto max-h-96 whitespace-pre-wrap">
+                          {extractedText}
+                        </div>
+                      ) : (
+                        <p className="text-gray-500 dark:text-gray-400">
+                          {sending ? 'Waiting for response...' : 'No response received yet'}
+                        </p>
+                      )}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+                
+                <TabsContent value="structured">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Structured Response from n8n</CardTitle>
                     </CardHeader>
                     <CardContent>
                       {response ? (
