@@ -17,7 +17,6 @@ export default function N8nDebugPage() {
   const [input, setInput] = useState('');
   const [sessionId, setSessionId] = useState('');
   const [sending, setSending] = useState(false);
-  const [polling, setPolling] = useState(false);
   const [response, setResponse] = useState<any>(null);
   const [rawResponse, setRawResponse] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -48,25 +47,27 @@ export default function N8nDebugPage() {
     try {
       addLog(`Sending message to n8n: "${input}"`);
       
+      // Simplified payload matching the curl command
       const payload = {
-        userId: user?.uid || 'debug-user',
-        userEmail: user?.email || 'debug@example.com',
-        userName: user?.displayName || 'Debug User',
         chatInput: input,
         sessionId: sessionId,
-        timestamp: new Date(),
       };
       
       addLog(`Webhook payload: ${JSON.stringify(payload)}`);
       
-      const webhookSent = await sendToWebhook(payload);
+      const result = await sendToWebhook(payload);
       
-      if (!webhookSent) {
-        throw new Error("Failed to send to webhook");
+      if (!result.success) {
+        throw new Error(result.error || "Failed to send to webhook");
       }
       
-      addLog('Message sent successfully, starting polling for response');
-      startPolling();
+      addLog('Message sent successfully, received direct response');
+      
+      // Set the response directly
+      setResponse(result.data);
+      setRawResponse(JSON.stringify(result.data, null, 2));
+      
+      addLog(`Response received: ${JSON.stringify(result.data)}`);
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
       setErrorMessage(errorMsg);
@@ -76,45 +77,12 @@ export default function N8nDebugPage() {
     }
   };
 
-  const startPolling = () => {
-    setPolling(true);
-    pollForResponse();
-  };
-
-  const pollForResponse = async () => {
-    if (!polling) return;
-    
-    try {
-      addLog('Checking for n8n response...');
-      const response = await fetch('/api/webhooks/chat/check');
-      const data = await response.json();
-      
-      addLog(`Poll response: ${JSON.stringify(data)}`);
-      
-      if (data.success && data.data) {
-        setResponse(data.data);
-        setRawResponse(data.data.message || 'No message content');
-        setPolling(false);
-        addLog('Response received! Polling stopped.');
-      } else {
-        // If no response yet, poll again in 2 seconds
-        setTimeout(pollForResponse, 2000);
-      }
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-      setErrorMessage(`Polling error: ${errorMsg}`);
-      addLog(`Polling error: ${errorMsg}`);
-      setPolling(false);
-    }
-  };
-
   const handleResetSession = () => {
     setSessionId(uuidv4());
     setInput('');
     setResponse(null);
     setRawResponse('');
     setErrorMessage(null);
-    setPolling(false);
     setLogs([]);
     addLog('Session reset with new session ID');
   };
@@ -134,7 +102,7 @@ export default function N8nDebugPage() {
               <Alert>
                 <AlertTitle>Not Logged In</AlertTitle>
                 <AlertDescription>
-                  You are not logged in. The debug tool will use default values for user information.
+                  You are not logged in. The debug tool will use simplified payload format.
                 </AlertDescription>
               </Alert>
             )}
@@ -171,13 +139,13 @@ export default function N8nDebugPage() {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Enter a test message to send to n8n"
-                    disabled={sending || polling}
+                    disabled={sending}
                   />
                   <Button 
                     onClick={handleSendMessage} 
-                    disabled={!input.trim() || sending || polling}
+                    disabled={!input.trim() || sending}
                   >
-                    {sending ? 'Sending...' : polling ? 'Waiting...' : 'Send'}
+                    {sending ? 'Sending...' : 'Send'}
                   </Button>
                 </div>
               </div>
@@ -208,7 +176,7 @@ export default function N8nDebugPage() {
                         </pre>
                       ) : (
                         <p className="text-gray-500 dark:text-gray-400">
-                          {polling ? 'Waiting for response from n8n...' : 'No response received yet'}
+                          {sending ? 'Waiting for response from n8n...' : 'No response received yet'}
                         </p>
                       )}
                     </CardContent>
@@ -227,7 +195,7 @@ export default function N8nDebugPage() {
                         </pre>
                       ) : (
                         <p className="text-gray-500 dark:text-gray-400">
-                          {polling ? 'Waiting for raw data...' : 'No raw data received yet'}
+                          {sending ? 'Waiting for raw data...' : 'No raw data received yet'}
                         </p>
                       )}
                     </CardContent>
