@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { sendToWebhook } from '@/lib/webhookService';
+import { v4 as uuidv4 } from 'uuid';
 
 // Message type
 interface Message {
@@ -14,6 +16,22 @@ interface Message {
   content: string;
   sender: 'user' | 'ai';
   timestamp: Date;
+}
+
+// Type pour l'événement n8n
+interface N8nResponseEvent extends CustomEvent {
+  detail: {
+    message: string;
+  };
+}
+
+// Type pour la réponse de l'API
+interface N8nApiResponse {
+  success: boolean;
+  data: {
+    message: string;
+    timestamp: string;
+  } | null;
 }
 
 export default function Chat() {
@@ -27,7 +45,10 @@ export default function Chat() {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [checkingResponses, setCheckingResponses] = useState(false);
+  const [sessionId, setSessionId] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const { user } = useAuth();
   const router = useRouter();
 
@@ -46,6 +67,65 @@ export default function Chat() {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
+  
+  // Initialisation du sessionId
+  useEffect(() => {
+    // Générer un UUID unique pour cette session de chat
+    setSessionId(uuidv4());
+  }, []);
+
+  // Fonction pour vérifier les nouvelles réponses
+  const checkForNewResponses = async () => {
+    if (checkingResponses) return;
+    
+    try {
+      setCheckingResponses(true);
+      const response = await fetch('/api/webhooks/chat/check');
+      const data: N8nApiResponse = await response.json();
+      
+      if (data.success && data.data) {
+        // Ajouter le message de réponse au chat
+        const aiMessage: Message = {
+          id: Date.now().toString(),
+          content: data.data.message,
+          sender: 'ai',
+          timestamp: new Date(data.data.timestamp),
+        };
+        
+        setMessages(prev => [...prev, aiMessage]);
+        setIsLoading(false); // Désactiver le chargement lorsqu'une réponse est reçue
+      }
+    } catch (error) {
+      console.error('Erreur lors de la vérification des réponses:', error);
+    } finally {
+      setCheckingResponses(false);
+    }
+  };
+
+  // Configurer un polling pour vérifier régulièrement les nouvelles réponses
+  useEffect(() => {
+    // Si en attente d'une réponse, commencer le polling
+    if (isLoading) {
+      // Vérifier immédiatement
+      checkForNewResponses();
+      
+      // Puis configurer un intervalle pour vérifier régulièrement
+      pollingIntervalRef.current = setInterval(checkForNewResponses, 2000); // Vérifier toutes les 2 secondes
+    } else {
+      // Si pas en attente, arrêter le polling
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+    }
+    
+    // Nettoyage lors du démontage du composant
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+    };
+  }, [isLoading]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,18 +144,31 @@ export default function Chat() {
     setInput('');
     setIsLoading(true);
     
-    // Simulate AI response (this will be replaced with actual API call later)
-    setTimeout(() => {
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: `I received your message: "${input}". This is a placeholder response. The actual AI integration will be implemented later.`,
-        sender: 'ai',
-        timestamp: new Date(),
-      };
-      
-      setMessages((prev) => [...prev, aiMessage]);
-      setIsLoading(false);
-    }, 1000);
+    // Envoyer le message au webhook n8n
+    if (user) {
+      try {
+        const webhookSent = await sendToWebhook({
+          userId: user.uid,
+          userEmail: user.email || undefined,
+          userName: user.displayName || undefined,
+          chatInput: input,
+          sessionId: sessionId,
+          timestamp: new Date(),
+        });
+        
+        if (!webhookSent) {
+          throw new Error("Échec de l'envoi au webhook");
+        }
+        
+        // Ne pas désactiver isLoading - nous attendons la réponse de n8n
+        // Le state sera mis à jour quand nous recevrons la réponse via le polling
+        
+      } catch (error) {
+        console.error('Erreur lors de l\'envoi au webhook:', error);
+        toast.error("Erreur lors de l'envoi du message");
+        setIsLoading(false);
+      }
+    }
   };
 
   if (!user) {

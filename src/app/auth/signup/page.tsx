@@ -44,10 +44,10 @@ export default function SignUp() {
     
     try {
       await signInWithGoogle();
-      toast.success('Signed up with Google successfully!');
+      toast.success('Inscription avec Google réussie !');
       router.push('/');
     } catch (error: any) {
-      toast.error(error.message || 'Failed to sign up with Google');
+      toast.error(error.message || 'Échec de l\'inscription avec Google');
     } finally {
       setLoading(false);
     }
@@ -57,8 +57,8 @@ export default function SignUp() {
     <div className="container mx-auto flex items-center justify-center min-h-[calc(100vh-128px)] px-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-2xl">Sign Up</CardTitle>
-          <CardDescription>Create an account to get started</CardDescription>
+          <CardTitle className="text-2xl">Créer un compte</CardTitle>
+          <CardDescription>Créez un compte pour commencer</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignUp} className="space-y-4">
@@ -74,7 +74,7 @@ export default function SignUp() {
               />
             </div>
             <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium">Password</label>
+              <label htmlFor="password" className="text-sm font-medium">Mot de passe</label>
               <Input
                 id="password"
                 type="password"
@@ -84,7 +84,7 @@ export default function SignUp() {
               />
             </div>
             <div className="space-y-2">
-              <label htmlFor="confirm-password" className="text-sm font-medium">Confirm Password</label>
+              <label htmlFor="confirm-password" className="text-sm font-medium">Confirmer le mot de passe</label>
               <Input
                 id="confirm-password"
                 type="password"
@@ -94,7 +94,7 @@ export default function SignUp() {
               />
             </div>
             <Button className="w-full" type="submit" disabled={loading}>
-              {loading ? 'Creating account...' : 'Sign Up'}
+              {loading ? 'Création du compte...' : 'Créer un compte'}
             </Button>
           </form>
 
@@ -103,7 +103,7 @@ export default function SignUp() {
               <div className="w-full border-t border-gray-200"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or continue with</span>
+              <span className="px-2 bg-white text-gray-500">Ou continuez avec</span>
             </div>
           </div>
 
@@ -114,14 +114,14 @@ export default function SignUp() {
             disabled={loading}
           >
             <FcGoogle className="mr-2 h-5 w-5" />
-            Sign up with Google
+            S'inscrire avec Google
           </Button>
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-sm text-gray-500">
-            Already have an account?{' '}
+            Vous avez déjà un compte ?{' '}
             <Link href="/auth/signin" className="font-medium text-blue-600 hover:text-blue-500">
-              Sign in
+              Connexion
             </Link>
           </p>
         </CardFooter>
