@@ -67,13 +67,12 @@ export function Navigation() {
 
           <div className="flex items-center gap-2">
             {user ? (
-              <div className="flex items-center gap-3">
+              <Link href="/profile" className="flex items-center gap-3">
                 <Avatar className="h-8 w-8 sm:h-9 sm:w-9 ring-2 ring-gray-200 dark:ring-gray-700 transition-all hover:ring-gray-300 dark:hover:ring-gray-600">
                   <AvatarImage src={user.photoURL || undefined} alt={user.displayName || user.email || "Utilisateur"} />
                   <AvatarFallback>{user.displayName?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}</AvatarFallback>
                 </Avatar>
-                <Button variant="outline" size="sm" onClick={handleLogout} className="hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">Déconnexion</Button>
-              </div>
+              </Link>
             ) : (
               <div className="flex items-center gap-2">
                 <Link href="/auth/signin">
@@ -131,16 +130,13 @@ export function Navigation() {
                 {route.name}
               </Link>
             ))}
-            <div className="sm:hidden border-t border-gray-200/50 dark:border-gray-800/50 pt-4 mt-3 flex flex-col space-y-2">
-              <div className="flex items-center gap-3 px-4 py-2.5">
-                <Avatar className="h-8 w-8 ring-2 ring-gray-200 dark:ring-gray-700">
-                  <AvatarImage src={user.photoURL || undefined} alt={user.displayName || user.email || "Utilisateur"} />
-                  <AvatarFallback>{user.displayName?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}</AvatarFallback>
-                </Avatar>
-                <span className="font-medium text-sm text-gray-700 dark:text-gray-300">{user.displayName || user.email}</span>
-              </div>
-              <Button variant="outline" className="w-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" onClick={handleLogout}>Déconnexion</Button>
-            </div>
+            <Link
+              href="/profile"
+              className="block px-4 py-2.5 rounded-lg text-base font-medium transition-all duration-200 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-50"
+              onClick={handleLinkClick}
+            >
+              Profil
+            </Link>
             <div className="border-t border-gray-200/50 dark:border-gray-800/50 pt-4 mt-3">
                 <Button
                     variant="ghost"
