@@ -25,8 +25,9 @@ export default function SignIn() {
       await signIn(email, password);
       toast.success('Connexion réussie !');
       router.push('/');
-    } catch (error: any) {
-      toast.error(error.message || 'Échec de la connexion');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Échec de la connexion';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -39,8 +40,9 @@ export default function SignIn() {
       await signInWithGoogle();
       toast.success('Connexion avec Google réussie !');
       router.push('/');
-    } catch (error: any) {
-      toast.error(error.message || 'Échec de la connexion avec Google');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Échec de la connexion avec Google';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -104,7 +106,7 @@ export default function SignIn() {
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-sm text-gray-500">
-            Vous n'avez pas de compte ?{' '}
+            Vous n&apos;avez pas de compte ?{' '}
             <Link href="/auth/signup" className="font-medium text-blue-600 hover:text-blue-500">
               Créer un compte
             </Link>

@@ -32,8 +32,9 @@ export default function SignUp() {
       await signUp(email, password);
       toast.success('Account created successfully!');
       router.push('/');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to create account');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create account';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -46,8 +47,9 @@ export default function SignUp() {
       await signInWithGoogle();
       toast.success('Inscription avec Google réussie !');
       router.push('/');
-    } catch (error: any) {
-      toast.error(error.message || 'Échec de l\'inscription avec Google');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Échec de l\'inscription avec Google';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -114,7 +116,7 @@ export default function SignUp() {
             disabled={loading}
           >
             <FcGoogle className="mr-2 h-5 w-5" />
-            S'inscrire avec Google
+            S&apos;inscrire avec Google
           </Button>
         </CardContent>
         <CardFooter className="flex justify-center">

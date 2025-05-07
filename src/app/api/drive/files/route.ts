@@ -1,11 +1,11 @@
-import { NextResponse, NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { google } from 'googleapis';
 import { JWT } from 'google-auth-library';
 
 // Force Node.js runtime
 export const runtime = 'nodejs';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   console.log('=== /api/drive/files called ===');
   console.log('ENV GOOGLE_CLIENT_EMAIL:', process.env.GOOGLE_CLIENT_EMAIL);
   console.log('ENV GOOGLE_PRIVATE_KEY (first 30 chars):',
@@ -36,8 +36,9 @@ export async function GET(request: NextRequest) {
 
     console.log('Drive API response files:', response.data.files);
     return NextResponse.json({ files: response.data.files || [] });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Drive API error:', err);
-    return NextResponse.json({ error: err.message || 'Drive API error' }, { status: 500 });
+    const errorMessage = err instanceof Error ? err.message : 'Drive API error';
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

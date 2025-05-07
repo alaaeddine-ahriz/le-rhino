@@ -12,7 +12,7 @@ const features = [
   },
   {
     icon: <MessageCircle className="h-10 w-10 text-green-500" />,
-    title: "Chat Propulsé par l'IA",
+    title: "Chat Propulsé par l&apos;IA",
     description: "Engagez des conversations naturelles pour obtenir des réponses et des insights directement depuis vos documents téléchargés.",
   },
   {
@@ -37,7 +37,7 @@ export default function Home() {
         </h1>
         <p className="mt-6 text-lg text-gray-600 dark:text-gray-300 max-w-2xl">
           Votre puissant assistant IA pour la gestion de documents et les conversations intelligentes.
-          Téléchargez des documents, discutez avec l'IA et obtenez des insights instantanément.
+          Téléchargez des documents, discutez avec l&apos;IA et obtenez des insights instantanément.
         </p>
         <div className="mt-10 flex items-center justify-center gap-6">
           <Link href="/chat">

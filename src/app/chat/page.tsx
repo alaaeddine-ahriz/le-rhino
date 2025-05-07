@@ -21,28 +21,35 @@ interface Message {
 /**
  * Extracts the actual text response from the n8n response data
  */
-const extractResponseText = (data: any): string => {
+const extractResponseText = (data: unknown): string => {
   try {
     // If it's already a string, return it
     if (typeof data === 'string') {
       return data;
     }
     
-    // If it's an array with objects that have an 'output' field (like [{"output":"text"}])
-    if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'object' && data[0].output) {
-      return data[0].output;
-    }
-    
-    // If it's an object with an 'output' field
-    if (typeof data === 'object' && data && data.output) {
-      return data.output;
-    }
-    
-    // If it's an object with a 'text' or 'message' field
-    if (typeof data === 'object' && data) {
-      if (data.text) return data.text;
-      if (data.message) return data.message;
-      if (data.response) return data.response;
+    // Type guard to check if data is an object
+    if (data && typeof data === 'object') {
+      // If it's an array with objects that have an 'output' field (like [{"output":"text"}])
+      if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'object' && data[0] !== null) {
+        const firstItem = data[0] as Record<string, unknown>;
+        if (typeof firstItem.output === 'string') {
+          return firstItem.output;
+        }
+      }
+      
+      // If it's an object with various fields
+      const typedData = data as Record<string, unknown>;
+      
+      // If it's an object with an 'output' field
+      if (typedData.output && typeof typedData.output === 'string') {
+        return typedData.output;
+      }
+      
+      // If it's an object with a 'text' or 'message' field
+      if (typedData.text && typeof typedData.text === 'string') return typedData.text;
+      if (typedData.message && typeof typedData.message === 'string') return typedData.message;
+      if (typedData.response && typeof typedData.response === 'string') return typedData.response;
     }
     
     // Fallback: stringify the entire object

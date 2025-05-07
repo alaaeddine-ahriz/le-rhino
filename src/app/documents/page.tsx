@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { useRouter } from 'next/navigation';
@@ -49,9 +48,10 @@ export default function DocumentsPage() {
         }
         const data = JSON.parse(raw);
         setFiles(data.files || []);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Erreur lors de la récupération des fichiers Drive:', err);
-        toast.error(err.message || 'Échec du chargement des documents');
+        const errorMessage = err instanceof Error ? err.message : 'Échec du chargement des documents';
+        toast.error(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -108,9 +108,10 @@ export default function DocumentsPage() {
         setUploadProgress(0);
         toast.success('Fichier téléchargé avec succès !');
       }, 500);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur lors du téléchargement du fichier:', error);
-      toast.error(error.message || 'Échec du téléchargement du fichier. Veuillez réessayer.');
+      const errorMessage = error instanceof Error ? error.message : 'Échec du téléchargement du fichier. Veuillez réessayer.';
+      toast.error(errorMessage);
       setUploading(false);
       setUploadProgress(0);
     }
@@ -153,7 +154,7 @@ export default function DocumentsPage() {
   const formatDate = (dateString: string): string => {
     try {
       return new Date(dateString).toLocaleDateString('fr-FR');
-    } catch (e) {
+    } catch {
       return 'Date inconnue';
     }
   };

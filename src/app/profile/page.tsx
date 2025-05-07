@@ -86,7 +86,7 @@ export default function ProfilePage() {
                     </div>
                     {user.displayName && (
                       <div className="space-y-2">
-                        <h4 className="text-sm font-medium">Nom d'affichage</h4>
+                        <h4 className="text-sm font-medium">Nom d&apos;affichage</h4>
                         <p className="text-sm text-muted-foreground">{user.displayName}</p>
                       </div>
                     )}

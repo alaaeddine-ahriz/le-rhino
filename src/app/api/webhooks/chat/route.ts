@@ -2,10 +2,12 @@ import { NextResponse } from 'next/server';
 
 // Déclaration pour étendre l'objet global
 declare global {
+  // We need to use var for global declarations to be properly hoisted and mutable
+  // eslint-disable-next-line no-var
   var latestN8nResponse: {
     message: string;
     timestamp: Date;
-    rawData?: any;
+    rawData?: Record<string, unknown>;
   } | undefined;
 }
 
@@ -27,37 +29,39 @@ export async function POST(request: Request) {
     let sourceField = 'default';
     
     // Exploration récursive pour trouver une réponse dans un objet imbriqué
-    const findResponseInNestedObject = (obj: any, depth: number = 0): string | null => {
+    const findResponseInNestedObject = (obj: unknown, depth: number = 0): string | null => {
       // Limite la profondeur d'exploration pour éviter les boucles infinies
       if (depth > 5 || !obj || typeof obj !== 'object') return null;
       
+      const typedObj = obj as Record<string, unknown>;
+      
       // Vérifier les champs standards à ce niveau
-      if (obj.processedResult && typeof obj.processedResult === 'string') return obj.processedResult;
-      if (obj.response && typeof obj.response === 'string') return obj.response;
-      if (obj.message && typeof obj.message === 'string') return obj.message;
+      if (typedObj.processedResult && typeof typedObj.processedResult === 'string') return typedObj.processedResult;
+      if (typedObj.response && typeof typedObj.response === 'string') return typedObj.response;
+      if (typedObj.message && typeof typedObj.message === 'string') return typedObj.message;
       
       // Exploration récursive pour les structures n8n courantes
-      if (obj.data) {
-        const dataResult = findResponseInNestedObject(obj.data, depth + 1);
+      if (typedObj.data) {
+        const dataResult = findResponseInNestedObject(typedObj.data, depth + 1);
         if (dataResult) return dataResult;
       }
       
-      if (obj.results && Array.isArray(obj.results) && obj.results.length > 0) {
-        for (const result of obj.results) {
+      if (typedObj.results && Array.isArray(typedObj.results) && typedObj.results.length > 0) {
+        for (const result of typedObj.results) {
           const resultData = findResponseInNestedObject(result, depth + 1);
           if (resultData) return resultData;
         }
       }
       
-      if (obj.json) {
-        const jsonResult = findResponseInNestedObject(obj.json, depth + 1);
+      if (typedObj.json) {
+        const jsonResult = findResponseInNestedObject(typedObj.json, depth + 1);
         if (jsonResult) return jsonResult;
       }
       
       // Explorer tous les champs restants
-      for (const key in obj) {
-        if (obj[key] && typeof obj[key] === 'object') {
-          const deepResult = findResponseInNestedObject(obj[key], depth + 1);
+      for (const key in typedObj) {
+        if (typedObj[key] && typeof typedObj[key] === 'object') {
+          const deepResult = findResponseInNestedObject(typedObj[key], depth + 1);
           if (deepResult) {
             console.log(`Trouvé réponse dans structure imbriquée à: ${key}`);
             return deepResult;
@@ -91,7 +95,7 @@ export async function POST(request: Request) {
       
       // Si un seul champ avec valeur string est disponible, on l'utilise
       const stringFields = Object.entries(data)
-        .filter(([_, value]) => typeof value === 'string')
+        .filter(([, value]) => typeof value === 'string')
         .map(([key, value]) => ({ key, value: value as string }));
       
       if (stringFields.length === 1) {
