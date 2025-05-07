@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Menu, X, Sun, Moon } from 'lucide-react';
+import { Menu, X, Sun, Moon, LogOut } from 'lucide-react';
 import { useTheme } from "next-themes";
 
 export function Navigation() {
@@ -24,11 +24,6 @@ export function Navigation() {
     { name: 'Chat', path: '/chat' },
     { name: 'Documents', path: '/documents' },
   ];
-
-  const handleLogout = () => {
-    logout();
-    setIsMobileMenuOpen(false);
-  };
 
   const handleLinkClick = () => {
     setIsMobileMenuOpen(false);
@@ -157,6 +152,17 @@ export function Navigation() {
                         <div className="mr-2 h-5 w-5 inline-block" />
                     )}
                     Changer de thème
+                </Button>
+                <Button
+                    variant="ghost"
+                    className="w-full justify-start text-base font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors mt-2"
+                    onClick={() => {
+                        logout();
+                        setIsMobileMenuOpen(false);
+                    }}
+                >
+                    <LogOut className="mr-2 h-5 w-5" />
+                    Déconnexion
                 </Button>
             </div>
           </nav>

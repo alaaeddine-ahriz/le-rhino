@@ -21,7 +21,7 @@ export default async function handler(
 
   const form = new IncomingForm({ keepExtensions: true });
 
-  form.parse(req, async (err: any, fields: Fields, files: Files) => {
+  form.parse(req, async (err, fields: Fields, files: Files) => {
     if (err) {
       console.error('Form parse error:', err);
       return res.status(500).json({ error: 'Error parsing form data' });
@@ -48,9 +48,10 @@ export default async function handler(
       fs.unlinkSync(filePath);
 
       return res.status(200).json({ file: result });
-    } catch (uploadError: any) {
+    } catch (uploadError: unknown) {
       console.error('Upload to Drive failed:', uploadError);
-      return res.status(500).json({ error: uploadError.message || 'Upload failed' });
+      const errorMessage = uploadError instanceof Error ? uploadError.message : 'Upload failed';
+      return res.status(500).json({ error: errorMessage });
     }
   });
 } 

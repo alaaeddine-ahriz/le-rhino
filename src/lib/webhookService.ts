@@ -9,7 +9,22 @@ interface WebhookPayload {
   timestamp?: Date;
 }
 
-export async function sendToWebhook(payload: WebhookPayload): Promise<any> {
+interface WebhookSuccessResponse {
+  success: true;
+  status: number;
+  data: unknown;
+}
+
+interface WebhookErrorResponse {
+  success: false;
+  error: string;
+  status?: number;
+  data?: unknown;
+}
+
+type WebhookResponse = WebhookSuccessResponse | WebhookErrorResponse;
+
+export async function sendToWebhook(payload: WebhookPayload): Promise<WebhookResponse> {
   try {
     // Get webhook URL from environment
     const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL;
@@ -40,7 +55,7 @@ export async function sendToWebhook(payload: WebhookPayload): Promise<any> {
     let responseData;
     try {
       responseData = await response.json();
-    } catch (e) {
+    } catch {
       responseData = await response.text();
     }
 

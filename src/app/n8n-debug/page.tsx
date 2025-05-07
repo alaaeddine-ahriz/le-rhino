@@ -103,8 +103,13 @@ export default function N8nDebugPage() {
         throw new Error(result.error || "Failed to send to webhook");
       }
       
-      // Set the response directly
-      setResponse(result.data);
+      // Type checking for result.data
+      const responseData = typeof result.data === 'object' && result.data !== null
+        ? result.data as Record<string, unknown>
+        : { stringValue: String(result.data) };
+      
+      // Set the response with proper typing
+      setResponse(responseData);
       setRawResponse(JSON.stringify(result.data, null, 2));
       
       // Extract the text content
