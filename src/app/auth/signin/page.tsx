@@ -23,10 +23,10 @@ export default function SignIn() {
     
     try {
       await signIn(email, password);
-      toast.success('Signed in successfully!');
+      toast.success('Connexion réussie !');
       router.push('/');
     } catch (error: any) {
-      toast.error(error.message || 'Failed to sign in');
+      toast.error(error.message || 'Échec de la connexion');
     } finally {
       setLoading(false);
     }
@@ -37,10 +37,10 @@ export default function SignIn() {
     
     try {
       await signInWithGoogle();
-      toast.success('Signed in with Google successfully!');
+      toast.success('Connexion avec Google réussie !');
       router.push('/');
     } catch (error: any) {
-      toast.error(error.message || 'Failed to sign in with Google');
+      toast.error(error.message || 'Échec de la connexion avec Google');
     } finally {
       setLoading(false);
     }
@@ -50,13 +50,13 @@ export default function SignIn() {
     <div className="container mx-auto flex items-center justify-center min-h-[calc(100vh-128px)] px-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-2xl">Sign In</CardTitle>
-          <CardDescription>Enter your email below to sign in to your account</CardDescription>
+          <CardTitle className="text-2xl">Connexion</CardTitle>
+          <CardDescription>Entrez votre email ci-dessous pour vous connecter à votre compte</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignIn} className="space-y-4">
             <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium">Email</label>
+              <label htmlFor="email" className="text-sm font-medium">E-mail</label>
               <Input
                 id="email"
                 type="email"
@@ -68,7 +68,7 @@ export default function SignIn() {
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label htmlFor="password" className="text-sm font-medium">Password</label>
+                <label htmlFor="password" className="text-sm font-medium">Mot de passe</label>
               </div>
               <Input
                 id="password"
@@ -79,7 +79,7 @@ export default function SignIn() {
               />
             </div>
             <Button className="w-full" type="submit" disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? 'Connexion...' : 'Connexion'}
             </Button>
           </form>
 
@@ -88,7 +88,7 @@ export default function SignIn() {
               <div className="w-full border-t border-gray-200"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or continue with</span>
+              <span className="px-2 bg-white text-gray-500">Ou continuez avec</span>
             </div>
           </div>
 
@@ -99,14 +99,14 @@ export default function SignIn() {
             disabled={loading}
           >
             <FcGoogle className="mr-2 h-5 w-5" />
-            Sign in with Google
+            Connexion avec Google
           </Button>
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-sm text-gray-500">
-            Don't have an account?{' '}
+            Vous n'avez pas de compte ?{' '}
             <Link href="/auth/signup" className="font-medium text-blue-600 hover:text-blue-500">
-              Sign up
+              Créer un compte
             </Link>
           </p>
         </CardFooter>
