@@ -19,7 +19,10 @@ const config = {
     extend: {
       fontFamily: {
         sans: [
-          'SF Pro Display',
+          'var(--font-inter)',
+          'Inter',
+          'ui-sans-serif',
+          'system-ui',
           '-apple-system',
           'BlinkMacSystemFont',
           'Segoe UI',

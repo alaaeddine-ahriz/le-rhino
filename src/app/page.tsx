@@ -4,8 +4,6 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, FileText, ShieldCheck, ArrowRight, Brain } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 
 const features = [
   {
@@ -36,19 +34,6 @@ const features = [
 
 export default function Home() {
   const { user } = useAuth();
-  const router = useRouter();
-
-  // Redirect to chat if user is already logged in
-  useEffect(() => {
-    if (user) {
-      router.push('/chat');
-    }
-  }, [user, router]);
-
-  // If the user is logged in, we're redirecting, so don't render the homepage
-  if (user) {
-    return null;
-  }
 
   return (
     <div className="min-h-screen">
@@ -76,7 +61,7 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row gap-4">
           <Link href="/chat">
                   <Button size="lg" className="h-14 px-8 text-lg font-medium bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 transition-all duration-300 border-0 shadow-lg hover:shadow-xl hover:scale-105 text-white dark:text-white">
-                    Commencer
+                    {user ? 'Continuer la discussion' : 'Commencer'}
                     <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
