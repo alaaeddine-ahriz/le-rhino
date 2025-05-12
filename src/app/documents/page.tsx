@@ -9,7 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { SiGoogledrive } from 'react-icons/si';
-import { Search, FileText, ImageIcon, BarChart3, PresentationIcon, FileQuestion, UploadCloud } from 'lucide-react';
+import { Search, FileText, ImageIcon, FileQuestion, UploadCloud } from 'lucide-react';
 
 interface FileItem {
   id: string;
@@ -227,7 +227,7 @@ export default function DocumentsPage() {
             onClick={() => setSelectedType(null)}
             className="dark:text-slate-300 dark:hover:bg-slate-700 dark:border-slate-600 data-[state=active]:bg-slate-200 dark:data-[state=active]:bg-slate-700"
           >
-            All Types
+            Tous les types
           </Button>
           {filterButtons.map(button => (
             <Button 
@@ -263,7 +263,7 @@ export default function DocumentsPage() {
       ) : filteredFiles.length === 0 && !loading ? (
         <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-lg p-6 dark:border-slate-700">
           <p className="text-lg font-medium dark:text-slate-100">Aucun document ne correspond à votre recherche ou à vos filtres</p>
-          <p className="text-slate-500 dark:text-slate-400 mt-2">Essayez d'ajuster vos termes de recherche ou vos filtres.</p>
+          <p className="text-slate-500 dark:text-slate-400 mt-2">Essayez d&apos;ajuster vos termes de recherche ou vos filtres.</p>
         </div>
       ) : (
         <div className="overflow-x-auto bg-white dark:bg-slate-800 shadow-md rounded-lg">
@@ -304,7 +304,7 @@ export default function DocumentsPage() {
                         <DialogHeader>
                           <DialogTitle className="text-slate-900 dark:text-slate-50">{file.name}</DialogTitle>
                           <DialogDescription className="text-slate-600 dark:text-slate-400">
-                            {formatFileSize(file.size)} • Uploaded on {formatDate(file.createdTime)}
+                            {formatFileSize(file.size)} • Téléchargé le {formatDate(file.createdTime)}
                           </DialogDescription>
                         </DialogHeader>
                         <div className="my-4">
@@ -325,7 +325,7 @@ export default function DocumentsPage() {
                           >
                             <a href={file.webViewLink} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
                               <SiGoogledrive className="h-5 w-5" />
-                              Open in Google Drive
+                              Ouvrir dans Google Drive
                             </a>
                           </Button>
                         </div>

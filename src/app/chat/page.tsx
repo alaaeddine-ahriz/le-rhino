@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { sendToWebhook } from '@/lib/webhookService';
 import { v4 as uuidv4 } from 'uuid';
+import Image from 'next/image';
 
 // Base64 encoded small rhino icon as fallback
 const RHINO_FALLBACK_IMAGE = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1ob3JuIj48cGF0aCBkPSJNMTIgNmE0IDQgMCAwIDEgOCAwYzAgMS41LS44NCAyLjktMi4yNSAzLjYzLS40My4yMy0uNTUuODEtLjI0IDEuMTdMMjIgMTUiLz48cGF0aCBkPSJNMTIgNmE0IDQgMCAwIDAtOCAwYzAgMS41Ljg0IDIuOSAyLjI1IDMuNjMuNDMuMjMuNTUuODEuMjQgMS4xN0wyIDE1Ii8+PHBhdGggZD0iTTE4IDEyYS41LjUgMCAxIDEtMS4wMSAwIC41LjUgMCAwIDEgMSAwWiIvPjxwYXRoIGQ9Ik03IDE1Yy0xLjUgMC0zIC41LTQgMmgyYy41LTEgMS41LTEuNSAyLTEuNXMxLjUuNSAyIDEuNWgyYy0xLTEuNS0yLjUtMi00LTJaIi8+PHBhdGggZD0iTTIyIDE3YzAgMiAwIDQtMyA0YzAgMC0nLTEuODktNy0zcy0xLTMuVzLTQtMnY0YzAgMS41LTEgNC00IDJoMTYiLz48L3N2Zz4=";
@@ -158,10 +159,12 @@ export default function Chat() {
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-[calc(100vh-250px)] text-center p-6 space-y-5 text-muted-foreground">
               <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
-                <img 
+                <Image 
                   src="/rhino.svg" 
                   alt="Le Rhino" 
-                  className="w-16 h-16 object-contain" 
+                  width={64}
+                  height={64}
+                  className="object-contain" 
                   onError={(e) => {
                     e.currentTarget.onerror = null;
                     e.currentTarget.src = RHINO_FALLBACK_IMAGE;
