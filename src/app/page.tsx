@@ -49,22 +49,22 @@ export default function Home() {
               <div>
                 <h1 className="text-5xl md:text-7xl font-bold text-white mb-4 leading-tight">
                   Le Rhino <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400">IA</span>
-                </h1>
+        </h1>
                 <p className="text-xl md:text-2xl text-gray-200 leading-relaxed">
                   Votre assistant pédagogique intelligent qui répond à vos questions en se basant sur le contenu de vos cours.
-                </p>
+        </p>
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/chat">
+          <Link href="/chat">
                   <Button size="lg" className="h-14 px-8 text-lg font-medium bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 transition-all duration-300 border-0 shadow-lg hover:shadow-xl hover:scale-105 text-white dark:text-white">
                     Commencer
                     <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
-              </div>
-            </div>
-            
+            </Button>
+          </Link>
+        </div>
+      </div>
+
             <div className="hidden md:block relative">
               <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl blur-xl opacity-30 -z-10 transform rotate-6"></div>
               <div className="relative bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur border border-gray-700/50 p-8 rounded-3xl shadow-2xl">
@@ -95,33 +95,33 @@ export default function Home() {
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
               Accompagnement Personnalisé
-            </h2>
+        </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               Découvrez comment le Rhino exploite vos documents pédagogiques pour vous aider à mieux comprendre vos cours et à réussir vos études.
-            </p>
+        </p>
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature) => (
+          {features.map((feature) => (
               <div 
                 key={feature.title} 
                 className="flex flex-col h-full bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 hover:translate-y-[-5px] group"
               >
                 <div className={`bg-gradient-to-r ${feature.color} p-6 group-hover:scale-105 transition-transform duration-300`}>
                   <div className="w-16 h-16 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                    {feature.icon}
-                  </div>
+                {feature.icon}
+              </div>
                 </div>
                 <div className="p-6 flex-1 flex flex-col">
                   <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">
-                    {feature.title}
-                  </h3>
+                {feature.title}
+              </h3>
                   <p className="text-gray-600 dark:text-gray-300 flex-1">
-                    {feature.description}
-                  </p>
+                {feature.description}
+              </p>
                 </div>
-              </div>
-            ))}
+            </div>
+          ))}
           </div>
 
           {/* Call to Action */}

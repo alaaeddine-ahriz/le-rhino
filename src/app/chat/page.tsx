@@ -30,23 +30,23 @@ const extractResponseText = (data: unknown): string => {
     
     // Type guard to check if data is an object
     if (data && typeof data === 'object') {
-      // If it's an array with objects that have an 'output' field (like [{"output":"text"}])
+    // If it's an array with objects that have an 'output' field (like [{"output":"text"}])
       if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'object' && data[0] !== null) {
         const firstItem = data[0] as Record<string, unknown>;
         if (typeof firstItem.output === 'string') {
           return firstItem.output;
-        }
+    }
       }
       
       // If it's an object with various fields
       const typedData = data as Record<string, unknown>;
-      
-      // If it's an object with an 'output' field
+    
+    // If it's an object with an 'output' field
       if (typedData.output && typeof typedData.output === 'string') {
         return typedData.output;
-      }
-      
-      // If it's an object with a 'text' or 'message' field
+    }
+    
+    // If it's an object with a 'text' or 'message' field
       if (typedData.text && typeof typedData.text === 'string') return typedData.text;
       if (typedData.message && typeof typedData.message === 'string') return typedData.message;
       if (typedData.response && typeof typedData.response === 'string') return typedData.response;
