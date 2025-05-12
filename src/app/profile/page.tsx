@@ -140,7 +140,9 @@ export default function ProfilePage() {
                       )}
                     </Button>
                   </div>
-                                    
+                  
+                  <Separator className="my-4" />
+                  
                   <div className="space-y-3">
                     <h4 className="text-sm font-medium">Compte</h4>
                     <Button 
