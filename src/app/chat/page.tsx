@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { sendToWebhook } from '@/lib/webhookService';
 import { v4 as uuidv4 } from 'uuid';
 import Image from 'next/image';
+import { Markdown } from '@/components/ui/markdown';
 
 // Base64 encoded small rhino icon as fallback
 const RHINO_FALLBACK_IMAGE = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1ob3JuIj48cGF0aCBkPSJNMTIgNmE0IDQgMCAwIDEgOCAwYzAgMS41LS44NCAyLjktMi4yNSAzLjYzLS40My4yMy0uNTUuODEtLjI0IDEuMTdMMjIgMTUiLz48cGF0aCBkPSJNMTIgNmE0IDQgMCAwIDAtOCAwYzAgMS41Ljg0IDIuOSAyLjI1IDMuNjMuNDMuMjMuNTUuODEuMjQgMS4xN0wyIDE1Ii8+PHBhdGggZD0iTTE4IDEyYS41LjUgMCAxIDEtMS4wMSAwIC41LjUgMCAwIDEgMSAwWiIvPjxwYXRoIGQ9Ik03IDE1Yy0xLjUgMC0zIC41LTQgMmgyYy41LTEgMS41LTEuNSAyLTEuNXMxLjUuNSAyIDEuNWgyYy0xLTEuNS0yLjUtMi00LTJaIi8+PHBhdGggZD0iTTIyIDE3YzAgMiAwIDQtMyA0YzAgMC0nLTEuODktNy0zcy0xLTMuVzLTQtMnY0YzAgMS41LTEgNC00IDJoMTYiLz48L3N2Zz4=";
@@ -202,10 +203,14 @@ export default function Chat() {
                     className={`px-4 py-3 rounded-2xl ${
                       message.sender === 'user'
                         ? 'bg-primary text-primary-foreground'
-                        : 'bg-gray-100 dark:bg-gray-800'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
                     }`}
                   >
-                    <p className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</p>
+                    {message.sender === 'user' ? (
+                      <p className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</p>
+                    ) : (
+                      <Markdown content={message.content} className="text-sm leading-relaxed" />
+                    )}
                   </div>
                 </div>
               </div>

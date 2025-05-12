@@ -6,12 +6,20 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRouter } from "next/navigation";
-import { Settings, User, LogOut } from "lucide-react";
-import { useEffect } from "react";
+import { Settings, User, LogOut, Sun, Moon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
+import { Separator } from "@/components/ui/separator";
 
 export default function ProfilePage() {
   const { user, logout } = useAuth();
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!user) {
@@ -34,7 +42,7 @@ export default function ProfilePage() {
       <div 
         className="h-32 bg-cover bg-center bg-no-repeat relative"
         style={{
-          backgroundImage: "url('/rhino-bg.jpeg')",
+          backgroundImage: "url('/rhino-banner.jpg')",
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-b from-gray-900/30 via-gray-900/20 to-gray-900/30 dark:from-gray-900/50 dark:via-gray-900/40 dark:to-gray-900/50 backdrop-blur-[1px]" />
@@ -103,15 +111,47 @@ export default function ProfilePage() {
                     Gérez vos préférences et paramètres de compte
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <Button 
-                    variant="destructive" 
-                    onClick={handleLogout}
-                    className="w-full sm:w-auto flex items-center gap-2 mx-auto"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    Déconnexion
-                  </Button>
+                <CardContent className="space-y-6">
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-medium">Apparence</h4>
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="w-full justify-start text-sm"
+                      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                    >
+                      {mounted ? (
+                        theme === "dark" ? (
+                          <>
+                            <Sun className="mr-2 h-4 w-4" />
+                            Mode clair
+                          </>
+                        ) : (
+                          <>
+                            <Moon className="mr-2 h-4 w-4" />
+                            Mode sombre
+                          </>
+                        )
+                      ) : (
+                        <>
+                          <div className="mr-2 h-4 w-4" />
+                          Changer de thème
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                                    
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-medium">Compte</h4>
+                    <Button 
+                      variant="destructive" 
+                      onClick={handleLogout}
+                      className="w-full justify-center flex items-center gap-2"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Déconnexion
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>

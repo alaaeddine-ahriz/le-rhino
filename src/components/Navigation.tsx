@@ -6,19 +6,12 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Menu, X, Sun, Moon, LogOut } from 'lucide-react';
-import { useTheme } from "next-themes";
+import { Menu, X, LogOut } from 'lucide-react';
 
 export function Navigation() {
   const { user, logout } = useAuth();
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const routes = [
     { name: 'Chat', path: '/chat' },
@@ -86,24 +79,6 @@ export function Navigation() {
                 </Button>
               </div>
             )}
-
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              aria-label="Toggle theme"
-              className="hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            >
-              {mounted ? (
-                theme === "dark" ? (
-                  <Sun className="h-5 w-5 transition-all hover:rotate-45" />
-                ) : (
-                  <Moon className="h-5 w-5 transition-all hover:rotate-45" />
-                )
-              ) : (
-                <div className="h-5 w-5" />
-              )}
-            </Button>
           </div>
         </div>
       </div>
@@ -135,27 +110,7 @@ export function Navigation() {
             <div className="border-t border-gray-200/50 dark:border-gray-800/50 pt-4 mt-3">
                 <Button
                     variant="ghost"
-                    className="w-full justify-start text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                    onClick={() => {
-                        setTheme(theme === "dark" ? "light" : "dark");
-                        setIsMobileMenuOpen(false);
-                    }}
-                    aria-label="Toggle theme"
-                >
-                    {mounted ? (
-                        theme === "dark" ? (
-                            <Sun className="mr-2 h-5 w-5 transition-all hover:rotate-45" />
-                        ) : (
-                            <Moon className="mr-2 h-5 w-5 transition-all hover:rotate-45" />
-                        )
-                    ) : (
-                        <div className="mr-2 h-5 w-5 inline-block" />
-                    )}
-                    Changer de thème
-                </Button>
-                <Button
-                    variant="ghost"
-                    className="w-full justify-start text-base font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors mt-2"
+                    className="w-full justify-start text-base font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                     onClick={() => {
                         logout();
                         setIsMobileMenuOpen(false);

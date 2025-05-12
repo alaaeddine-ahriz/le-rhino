@@ -47,6 +47,14 @@ export default function DocumentsPage() {
           throw new Error(raw || `HTTP ${res.status}`);
         }
         const data = JSON.parse(raw);
+        
+        // Log individual files to check if size and createdTime exist
+        if (data.files && data.files.length > 0) {
+          console.log('Premier fichier reçu:', data.files[0]);
+          console.log('Taille:', data.files[0].size);
+          console.log('Date de création:', data.files[0].createdTime);
+        }
+        
         setFiles(data.files || []);
       } catch (err: unknown) {
         console.error('Erreur lors de la récupération des fichiers Drive:', err);
@@ -120,11 +128,13 @@ export default function DocumentsPage() {
   const formatFileSize = (size?: string | number): string => {
     if (!size) return 'Taille inconnue';
     
-    if (typeof size === 'string' && isNaN(Number(size))) {
-      return size;
+    let bytes: number;
+    if (typeof size === 'string') {
+      if (isNaN(Number(size))) return size;
+      bytes = parseInt(size, 10);
+    } else {
+      bytes = size;
     }
-    
-    const bytes = typeof size === 'string' ? parseInt(size, 10) : size;
     
     if (bytes === 0) return '0 Octets';
     const k = 1024;
@@ -151,10 +161,30 @@ export default function DocumentsPage() {
     return 'Autre';
   };
 
-  const formatDate = (dateString: string): string => {
+  const formatDate = (dateString?: string): string => {
+    if (!dateString) return 'Date inconnue';
+    
     try {
+      if (dateString.includes('T') && dateString.includes('Z')) {
+        const date = new Date(dateString);
+        
+        if (isNaN(date.getTime())) {
+          console.error('Invalid date:', dateString);
+          return 'Date invalide';
+        }
+        
+        return date.toLocaleDateString('fr-FR', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
+      
       return new Date(dateString).toLocaleDateString('fr-FR');
-    } catch {
+    } catch (error) {
+      console.error('Error formatting date:', error, dateString);
       return 'Date inconnue';
     }
   };
