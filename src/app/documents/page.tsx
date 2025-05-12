@@ -173,8 +173,6 @@ export default function DocumentsPage() {
     { name: 'PDF', icon: <FileText className="mr-2 h-4 w-4" /> },
     { name: 'Document', icon: <FileText className="mr-2 h-4 w-4" /> },
     { name: 'Image', icon: <ImageIcon className="mr-2 h-4 w-4" /> },
-    { name: 'Tableur', icon: <BarChart3 className="mr-2 h-4 w-4" /> },
-    { name: 'Présentation', icon: <PresentationIcon className="mr-2 h-4 w-4" /> },
     { name: 'Autre', icon: <FileQuestion className="mr-2 h-4 w-4" /> },
   ];
 
@@ -182,7 +180,7 @@ export default function DocumentsPage() {
     <div className="container mx-auto px-4 py-12">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight dark:text-slate-100">Mes Documents</h1>
+          <h1 className="text-4xl font-bold tracking-tight dark:text-slate-100">Documents</h1>
           <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">Recherchez, filtrez et gérez vos fichiers téléchargés.</p>
         </div>
         
@@ -209,7 +207,7 @@ export default function DocumentsPage() {
         </div>
       </div>
 
-      <div className="mb-8 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg shadow">
+      <div className="mb-8">
         <div className="flex flex-col sm:flex-row gap-4 mb-4">
           <div className="relative flex-grow">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 dark:text-slate-500" />
