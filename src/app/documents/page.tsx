@@ -246,24 +246,24 @@ export default function DocumentsPage() {
 
       {uploading && (
         <div className="mb-6">
-          <p className="text-sm font-medium mb-2">Uploading...</p>
+          <p className="text-sm font-medium mb-2">Téléchargement en cours...</p>
           <Progress value={uploadProgress} className="h-2" />
         </div>
       )}
 
       {loading ? (
         <div className="flex justify-center items-center h-64">
-          <p className="dark:text-slate-300">Loading documents...</p>
+          <p className="dark:text-slate-300">Chargement des documents...</p>
         </div>
       ) : files.length === 0 && !loading ? (
         <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-lg p-6 dark:border-slate-700">
-          <p className="text-lg font-medium dark:text-slate-100">No documents found</p>
-          <p className="text-slate-500 dark:text-slate-400 mt-2">Upload your first document to get started.</p>
+          <p className="text-lg font-medium dark:text-slate-100">Aucun document trouvé</p>
+          <p className="text-slate-500 dark:text-slate-400 mt-2">Téléchargez votre premier document pour commencer.</p>
         </div>
       ) : filteredFiles.length === 0 && !loading ? (
         <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-lg p-6 dark:border-slate-700">
-          <p className="text-lg font-medium dark:text-slate-100">No documents match your search or filters</p>
-          <p className="text-slate-500 dark:text-slate-400 mt-2">Try adjusting your search terms or filters.</p>
+          <p className="text-lg font-medium dark:text-slate-100">Aucun document ne correspond à votre recherche ou à vos filtres</p>
+          <p className="text-slate-500 dark:text-slate-400 mt-2">Essayez d'ajuster vos termes de recherche ou vos filtres.</p>
         </div>
       ) : (
         <div className="overflow-x-auto bg-white dark:bg-slate-800 shadow-md rounded-lg">

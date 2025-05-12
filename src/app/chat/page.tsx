@@ -10,6 +10,9 @@ import { useRouter } from 'next/navigation';
 import { sendToWebhook } from '@/lib/webhookService';
 import { v4 as uuidv4 } from 'uuid';
 
+// Base64 encoded small rhino icon as fallback
+const RHINO_FALLBACK_IMAGE = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1ob3JuIj48cGF0aCBkPSJNMTIgNmE0IDQgMCAwIDEgOCAwYzAgMS41LS44NCAyLjktMi4yNSAzLjYzLS40My4yMy0uNTUuODEtLjI0IDEuMTdMMjIgMTUiLz48cGF0aCBkPSJNMTIgNmE0IDQgMCAwIDAtOCAwYzAgMS41Ljg0IDIuOSAyLjI1IDMuNjMuNDMuMjMuNTUuODEuMjQgMS4xN0wyIDE1Ii8+PHBhdGggZD0iTTE4IDEyYS41LjUgMCAxIDEtMS4wMSAwIC41LjUgMCAwIDEgMSAwWiIvPjxwYXRoIGQ9Ik03IDE1Yy0xLjUgMC0zIC41LTQgMmgyYy41LTEgMS41LTEuNSAyLTEuNXMxLjUuNSAyIDEuNWgyYy0xLTEuNS0yLjUtMi00LTJaIi8+PHBhdGggZD0iTTIyIDE3YzAgMiAwIDQtMyA0YzAgMC0nLTEuODktNy0zcy0xLTMuVzLTQtMnY0YzAgMS41LTEgNC00IDJoMTYiLz48L3N2Zz4=";
+
 // Message type
 interface Message {
   id: string;
@@ -147,72 +150,117 @@ export default function Chat() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 flex flex-col h-[calc(100vh-64px)]">
-      <div className="flex-1 overflow-y-auto mb-4 space-y-4">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex ${
-              message.sender === 'user' ? 'justify-end' : 'justify-start'
-            }`}
-          >
-            <div className="flex items-start max-w-3/4">
-              {message.sender === 'ai' && (
-                <Avatar className="mr-2 mt-0.5">
-                  <AvatarFallback>AI</AvatarFallback>
-                  <AvatarImage src="/icons/ai-avatar.png" alt="AI" />
-                </Avatar>
-              )}
-              <div
-                className={`px-4 py-2 rounded-lg ${
-                  message.sender === 'user'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted'
-                }`}
-              >
-                <p>{message.content}</p>
-                <p className="text-xs mt-1 opacity-70">
-                  {message.timestamp.toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </p>
+    <div className="flex flex-col h-[calc(100vh-64px)] bg-white dark:bg-gray-900">
+
+      {/* Messages Container */}
+      <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700">
+        <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+          {messages.length === 0 && (
+            <div className="flex flex-col items-center justify-center h-[calc(100vh-250px)] text-center p-6 space-y-5 text-muted-foreground">
+              <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                <img 
+                  src="/rhino.svg" 
+                  alt="Le Rhino" 
+                  className="w-16 h-16 object-contain" 
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = RHINO_FALLBACK_IMAGE;
+                  }}
+                />
               </div>
-              {message.sender === 'user' && (
-                <Avatar className="ml-2 mt-0.5">
-                  <AvatarFallback>
-                    {user?.displayName?.[0] || user?.email?.[0] || 'U'}
-                  </AvatarFallback>
-                  <AvatarImage src={user?.photoURL || undefined} alt={user?.displayName || 'User'} />
-                </Avatar>
-              )}
+              <h3 className="font-medium text-lg">Bienvenue dans le chat</h3>
+              <p className="text-sm max-w-md">Posez vos questions sur le contenu de vos cours et obtenez des réponses précises basées sur vos documents.</p>
             </div>
-          </div>
-        ))}
-        {isLoading && (
-          <div className="flex justify-start">
-            <div className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-muted">
-              <div className="w-2 h-2 rounded-full bg-gray-400 animate-pulse"></div>
-              <div className="w-2 h-2 rounded-full bg-gray-400 animate-pulse delay-150"></div>
-              <div className="w-2 h-2 rounded-full bg-gray-400 animate-pulse delay-300"></div>
+          )}
+          
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={`${
+                message.sender === 'user' ? 'pl-12 sm:pl-24' : 'pr-12 sm:pr-24'
+              } animate-in fade-in duration-300`}
+            >
+              <div className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`flex items-start max-w-[90%] group`}>
+                  {message.sender === 'ai' && (
+                    <Avatar className="mr-3 mt-1 h-7 w-7 flex-shrink-0">
+                      <AvatarFallback>🦏</AvatarFallback>
+                      <AvatarImage 
+                        src="/rhino.svg" 
+                        alt="Le Rhino" 
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = RHINO_FALLBACK_IMAGE;
+                        }}
+                      />
+                    </Avatar>
+                  )}
+                  <div
+                    className={`px-4 py-3 rounded-2xl ${
+                      message.sender === 'user'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-gray-100 dark:bg-gray-800'
+                    }`}
+                  >
+                    <p className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</p>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
+          ))}
+          
+          {isLoading && (
+            <div className="pr-12 sm:pr-24 animate-in fade-in duration-300">
+              <div className="flex justify-start">
+                <div className="flex items-start max-w-[90%]">
+                  <Avatar className="mr-3 mt-1 h-7 w-7 flex-shrink-0">
+                    <AvatarFallback>🦏</AvatarFallback>
+                    <AvatarImage 
+                      src="/rhino.svg" 
+                      alt="Le Rhino" 
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = RHINO_FALLBACK_IMAGE;
+                      }}
+                    />
+                  </Avatar>
+                  <div className="flex items-center space-x-2 px-3 py-2.5 rounded-2xl bg-gray-100 dark:bg-gray-800">
+                    <div className="w-2 h-2 rounded-full bg-gray-400 animate-pulse"></div>
+                    <div className="w-2 h-2 rounded-full bg-gray-400 animate-pulse delay-150"></div>
+                    <div className="w-2 h-2 rounded-full bg-gray-400 animate-pulse delay-300"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
       </div>
       
-      <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
-        <Input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Type your message..."
-          disabled={isLoading}
-          className="flex-1"
-        />
-        <Button type="submit" disabled={isLoading || !input.trim()}>
-          Send
-        </Button>
-      </form>
+      {/* Input Area */}
+      <div className="border-t dark:border-gray-800 bg-white dark:bg-gray-900 p-3 md:p-4 sticky bottom-0">
+        <div className="max-w-3xl mx-auto">
+          <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
+            <Input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Posez votre question..."
+              disabled={isLoading}
+              className="flex-1 rounded-full border border-gray-300 dark:border-gray-700 focus-visible:ring-1 focus-visible:ring-primary dark:bg-gray-800 h-12 px-4"
+            />
+            <Button 
+              type="submit" 
+              disabled={isLoading || !input.trim()} 
+              className="rounded-full h-10 w-10 p-0 flex items-center justify-center bg-primary hover:bg-primary/90"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+              <span className="sr-only">Envoyer</span>
+            </Button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 } 

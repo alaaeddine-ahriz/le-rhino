@@ -3,6 +3,9 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, FileText, ShieldCheck, ArrowRight, Brain } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 const features = [
   {
@@ -32,6 +35,21 @@ const features = [
 ];
 
 export default function Home() {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  // Redirect to chat if user is already logged in
+  useEffect(() => {
+    if (user) {
+      router.push('/chat');
+    }
+  }, [user, router]);
+
+  // If the user is logged in, we're redirecting, so don't render the homepage
+  if (user) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen">
       {/* Hero Section with Background Gradient */}

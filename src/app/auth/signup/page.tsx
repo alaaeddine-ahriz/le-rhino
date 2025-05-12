@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
@@ -15,8 +15,15 @@ export default function SignUp() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signUp, signInWithGoogle } = useAuth();
+  const { signUp, signInWithGoogle, user } = useAuth();
   const router = useRouter();
+
+  // Redirect to chat if user is already logged in
+  useEffect(() => {
+    if (user) {
+      router.push('/chat');
+    }
+  }, [user, router]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +38,7 @@ export default function SignUp() {
     try {
       await signUp(email, password);
       toast.success('Account created successfully!');
-      router.push('/');
+      router.push('/chat');
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to create account';
       toast.error(errorMessage);
@@ -46,7 +53,7 @@ export default function SignUp() {
     try {
       await signInWithGoogle();
       toast.success('Inscription avec Google réussie !');
-      router.push('/');
+      router.push('/chat');
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Échec de l\'inscription avec Google';
       toast.error(errorMessage);
@@ -54,6 +61,11 @@ export default function SignUp() {
       setLoading(false);
     }
   };
+
+  // If the user is logged in, we're redirecting, so don't render the form
+  if (user) {
+    return null;
+  }
 
   return (
     <div className="container mx-auto flex items-center justify-center min-h-[calc(100vh-128px)] px-4">

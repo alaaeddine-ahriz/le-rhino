@@ -33,7 +33,7 @@ export function Navigation() {
     <header className="w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-800/50 shadow-sm sticky top-0 z-50">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
         <Link 
-          href={user ? "/" : "/auth/signin"} 
+          href={user ? "/chat" : "/"} 
           className="flex items-center text-2xl font-extrabold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent hover:opacity-80 transition-opacity" 
           onClick={handleLinkClick}
         >
